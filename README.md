@@ -8,3 +8,5 @@ The repository is organized as follows:
 * Numerical_experiments_LS.ipynb is a notebook where each method is applied to a LASSO problem.
 * Numerical_experiments_Inpainting.ipynb is a notebook where each method is applied to an inpainting problem.
 * visualizer.py is a file helping visualizing the performance of each method.
+
+If you have any questions or comments, please contact me at labarrie@insa-toulouse.fr.
