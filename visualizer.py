@@ -1,27 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 10 15:13:23 2022
 
-@author: hlabarri
-"""
 
 import numpy as np
 import scipy as scp
 import matplotlib.pyplot as plt
 
 class To_Plot:
-    def __init__(self,cout,legend,xaxis=None):
-        self.cout=cout
+    def __init__(self,cost,legend,xaxis=None):
+        self.cost=cost
         self.legend=legend
         if xaxis is None:
-            self.xaxis = np.linspace(0,len(cout)-1,len(cout))
+            self.xaxis = np.linspace(0,len(cost)-1,len(cost))
         else:
             self.xaxis = xaxis
         
-def Plot(tab,ite=True,coutmin=None,plage=None,fontsize=None,style=None,
+def Plot(tab,ite=True,costmin=None,plage=None,fontsize=None,style=None,
          eps=1e-8):
-    """Fonction d'affichage de courbes de convergence.
+    """Function for displaying convergence curves.
     
     Parameters
     ----------
@@ -32,7 +28,7 @@ def Plot(tab,ite=True,coutmin=None,plage=None,fontsize=None,style=None,
             Boolean which states if the convergence curves are displayed
             according to the number of iterations or according to the 
             array tab[?].xaxis
-        coutmin : float, optional
+        costmin : float, optional
             Minimum F of the function to minimize.
         plage : array, optional
             Array containing two values [start,finish]. The function displays 
@@ -50,14 +46,14 @@ def Plot(tab,ite=True,coutmin=None,plage=None,fontsize=None,style=None,
     if fontsize==None:
         fontsize=18
     n=len(tab)
-    if coutmin is None:
-        cout_min=np.min(tab[0].cout)
+    if costmin is None:
+        cost_min=np.min(tab[0].cost)
         for i in range(1,n):
-            temp=np.min(tab[i].cout)
-            if temp<cout_min:cout_min=temp
-        cout_min=cout_min*(1-eps)
+            temp=np.min(tab[i].cost)
+            if temp<cost_min:cost_min=temp
+        cost_min=cost_min*(1-eps)
     else:
-        cout_min=coutmin
+        cost_min=costmin
     if plage is None:
         ite_start=0
         ite_fin=-1
@@ -77,15 +73,15 @@ def Plot(tab,ite=True,coutmin=None,plage=None,fontsize=None,style=None,
         else:
             st=style[i]
         if ite:
-            plt.plot(np.log10(tab[i].cout[ite_start:
+            plt.plot(np.log10(tab[i].cost[ite_start:
                                           np.minimum(ite_fin,
-                                                     len(tab[i].cout))]
-                              -cout_min),linestyle=st)
-            n_ite=len(tab[i].cout[ite_start:
-                                  np.minimum(ite_fin,len(tab[i].cout))])
+                                                     len(tab[i].cost))]
+                              -cost_min),linestyle=st)
+            n_ite=len(tab[i].cost[ite_start:
+                                  np.minimum(ite_fin,len(tab[i].cost))])
             if n_ite>ite_max:ite_max=n_ite
         else:
-            plt.plot(tab[i].xaxis,np.log10(tab[i].cout-cout_min),linestyle=st)
+            plt.plot(tab[i].xaxis,np.log10(tab[i].cost-cost_min),linestyle=st)
             if tab[i].xaxis[0]<xmin and plage is None:xmin=tab[i].xaxis[0]
             if tab[i].xaxis[-1]>xmax and plage is None:xmax=tab[i].xaxis[-1]
     plt.legend(tab_leg,fontsize=fontsize)
