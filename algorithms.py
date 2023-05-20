@@ -599,7 +599,7 @@ def FISTA_automatic_restart(x,s,Niter,epsilon,Df,proxh,F,alpha=3,C=6.38,
     
 
     
-def FISTA_for_AKL(x,s,Niter,epsilon,Df,proxh,F,alpha=3,exit_crit=None,
+def FISTA_for_AKL(x,s,Niter,Nmax,epsilon,Df,proxh,F,alpha=3,exit_crit=None,
                   extra_function=None,track_ctime=False
                  ,out_cost=True):
     """FISTA with the exit condition introduced by Alamo, Krupa and Limon 
@@ -614,6 +614,8 @@ def FISTA_for_AKL(x,s,Niter,epsilon,Df,proxh,F,alpha=3,exit_crit=None,
             Step size of the method.
         Niter : integer
             Minimum number of iterations.
+        Nmax : integer
+            Maximum number of iterations.
         epsilon: float
             Expected accuracy for the given exit criteria.
         Df : operator
@@ -679,7 +681,7 @@ def FISTA_for_AKL(x,s,Niter,epsilon,Df,proxh,F,alpha=3,exit_crit=None,
         i += 1
         xm = np.copy(x)
         x = ForwardBackward_step(y,s,proxh,Df)
-        out = exit_crit(x,y)<epsilon
+        out = exit_crit(x,y)<epsilon or i >= Nmax
         y = x+(i-1)/(i+alpha-1)*(x-xm)
         if i >= threshold_iter:
             mandatory_cost += [F(x)]
@@ -761,7 +763,7 @@ def FISTA_restart_AKL(x,s,Niter,n0,epsilon,Df,proxh,F,alpha=3,exit_crit=None,
     F_tab = [F(x)]
     if track_ctime:ctime = [time.perf_counter()-t0]
     if out_cost: cost = [F_tab[0]]
-    outputs = FISTA_for_AKL(x,s,n,epsilon,Df,proxh,F,alpha,exit_crit,
+    outputs = FISTA_for_AKL(x,s,n,Niter,epsilon,Df,proxh,F,alpha,exit_crit,
                             extra_function=extra_function,
                             track_ctime=track_ctime,out_cost=out_cost)
     x,out,lastF,n = outputs[:4]
@@ -783,7 +785,7 @@ def FISTA_restart_AKL(x,s,Niter,n0,epsilon,Df,proxh,F,alpha=3,exit_crit=None,
     F_tab = np.concatenate((F_tab,[lastF]))
     while (i < Niter) and out==False:
         if track_ctime:ctime[-1] += time.perf_counter()-t_temp
-        outputs = FISTA_for_AKL(x,s,np.minimum(n,Niter-i-1),epsilon,Df,proxh,
+        outputs = FISTA_for_AKL(x,s,np.minimum(n,Niter-i-1),Niter-i-1,epsilon,Df,proxh,
                                 F,alpha,exit_crit,
                                 extra_function=extra_function,
                                 track_ctime=track_ctime,out_cost=out_cost)
